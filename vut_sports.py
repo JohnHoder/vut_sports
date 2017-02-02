@@ -151,7 +151,7 @@ class VUTSportRegister(object):
 
 		sport_url = ""
 
-		for elem in soup(text=re.compile(r"" + self.sport_name + "")):
+		for elem in soup(text=re.compile(r'(.*)' + self.sport_name + '(.*)')):
 			#print elem.parent
 			sport_url = "https://www.vutbr.cz/studis/student.phtml" + elem.parent['href']
 			sport_id = re.findall(r'\d+', elem.parent['href'])[0]
