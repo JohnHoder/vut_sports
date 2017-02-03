@@ -7,6 +7,12 @@ import urllib2
 import logging
 import sys
 
+import sched
+import time
+from datetime import datetime as dt
+import datetime
+import timeit
+
 try:
 	import requests
 	from bs4 import BeautifulSoup
@@ -242,4 +248,25 @@ if __name__ == "__main__":
 
 	sa = VUTSportRegister(username, password, sport_name, day_of_occurence, hour_from, hour_till)
 	sa.login()
-	sa.registerSport()
+	
+	#TIMER
+	def now_str():
+		t = dt.now().time()
+		return t.strftime("%H:%M:%S")
+
+	# Build a scheduler object that will look at absolute times
+	scheduler = sched.scheduler(time.time, time.sleep)
+	
+	# Put task on queue. Format H, M, S
+	daily_time = datetime.time(12, 00, 00)
+	first_time = dt.combine(dt.now(), daily_time)
+	print "%s -> Waiting till %s\n" % (now_str(), daily_time)
+
+	start = timeit.default_timer()
+
+	# time, priority, callable, *args
+	scheduler.enterabs(time.mktime(first_time.timetuple()), 1, sa.registerSport, (2,))
+	scheduler.run()
+
+	stop = timeit.default_timer()
+	print "\nTime elapsed: ", stop - start
